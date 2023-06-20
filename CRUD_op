@@ -1,0 +1,120 @@
+package Crud_Operation;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class Crud_Operation {
+
+	static Scanner scanner=new Scanner(System.in);
+	public static void main(String[] args) throws Exception {
+		
+		Class.forName("com.mysql.cj.jdbc.Driver");  //Driver class load successfully.
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/classes","root","Root");
+        
+		boolean b = true;
+		while(b) {
+			
+			System.out.println("Select any one option..!");
+			System.out.println("1.Insert 2.Retrive All 3.Retrive Based on ID 4.Delete record 5.Update record 6.Exit");
+			
+			int val = scanner.nextInt();
+			
+			switch(val)
+			{
+			case 1:
+			{
+				System.out.println("Enter Student ID,Name,Rating");
+				PreparedStatement prep = con.prepareStatement("insert into students values(?,?,?)");
+		
+				int id=scanner.nextInt();
+				String name=scanner.next();
+				String rate=scanner.next();
+		
+				prep.setInt(1, id);
+				prep.setString(2, name);
+				prep.setString(3, rate);
+				prep.execute();
+				System.out.println("Values Inserted...");
+				break;
+		   }
+			case 2:
+			{
+				Statement st=con.createStatement();
+				ResultSet rs = st.executeQuery("select * from students");
+				while (rs.next())
+				{
+				 int Stud_id = rs.getInt(1);
+				 String stud_name=rs.getString(2);
+				 String stud_rate=rs.getString(3);
+				 
+				 System.out.println(Stud_id+" "+stud_name+" "+stud_rate);
+				}
+				break;
+			}
+			case 3:
+			{
+				PreparedStatement prep = con.prepareStatement("select * from students where id=?");
+				System.out.println("Enter student id");
+				int a=scanner.nextInt();
+				prep.setInt(1, a);
+				ResultSet rs = prep.executeQuery();
+				while(rs.next())
+				{
+					int Stud_id = rs.getInt(1);
+					String stud_name=rs.getString(2);
+					String stud_rate=rs.getString(3);
+					System.out.println("The details are:");
+					System.out.println(Stud_id+" "+stud_name+" "+stud_rate);
+				}
+				break;
+			}
+			case 4:
+			{
+				PreparedStatement st=con.prepareStatement("delete from students where id=?");
+				System.out.println("Enter Student Id:");
+				int a=scanner.nextInt();
+				st.setInt(1,a);
+				st.execute();
+				System.out.println("Values Deleted...");	
+				break;
+			}
+			case 5:
+			{
+				PreparedStatement st = con.prepareStatement("update students set id=?,name=?,rate=? where id=?");
+				System.out.println("Enter Id of row to be updated ");
+				int a=scanner.nextInt();
+				System.out.println("Enter updated Student ID,Name,rate");
+				st.setInt(4, a);
+				
+				int id=scanner.nextInt();
+				String name=scanner.next();
+				String rate=scanner.next();
+				
+				st.setInt(1, id);
+				st.setString(2,name);
+				st.setString(3,rate);
+				
+				st.execute();
+				System.out.println("Values Updated...");
+				break;	
+			}
+			case 6:
+			{
+				System.out.println("*************THANK YOU*************");
+				b=false;
+				break;
+			}
+			default :
+			{
+				System.out.println("Select proper Option...");
+			}
+			}
+			
+		}
+	}
+	}
+
